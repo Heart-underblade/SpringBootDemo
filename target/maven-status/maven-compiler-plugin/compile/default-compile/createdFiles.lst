@@ -1,0 +1,11 @@
+com\demo\service\JdbcServices.class
+com\demo\service\JdbcImpl.class
+com\demo\controller\BookController.class
+com\demo\controller\MybatisController.class
+com\demo\Application.class
+com\demo\entity\Book.class
+com\demo\service\MybatisImpl.class
+com\demo\controller\TestController.class
+com\demo\service\MybatisService.class
+com\demo\dao\MybatisMapper.class
+com\demo\controller\PaddleOCRController.class

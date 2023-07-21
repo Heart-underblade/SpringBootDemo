@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/test
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      one:
+        max-active: 100
+        min-idle: 20
+        max-wait: 2000
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: com.demo.entity
+
+
