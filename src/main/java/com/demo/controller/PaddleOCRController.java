@@ -1,5 +1,9 @@
 package com.demo.controller;
 
+import com.demo.dao.ChemMapper;
+import com.demo.entity.Chem;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,7 +28,11 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/paddleocr")
+@MapperScan("com.demo.dao")
 public class PaddleOCRController {
+    @Autowired
+    private ChemMapper chemMapper;
+
     @GetMapping("/")
     public String uploladPage(){
         return "upload";
@@ -58,34 +67,35 @@ public class PaddleOCRController {
             System.out.println(json);
             //解析Json返回值
             List<List<Map>> json1 = (List<List<Map>>) json.get("results");
-            //获取文件目录为后面画图做准备
-            String tarImgPath = destFile.toString();
-            File srcImgFile = new File(tarImgPath);
-            System.out.println(srcImgFile);
-            //文件流转化为图片
-            Image srcImg = ImageIO.read(srcImgFile);
-            //获取图片的宽
-            int srcImgWidth = srcImg.getWidth(null);
-            //获取图片的高
-            int srcImgHeight = srcImg.getHeight(null);
-            //开始绘图主流程，创建画板设置画笔颜色等
-            BufferedImage bufImg = new BufferedImage(srcImgWidth, srcImgHeight, BufferedImage.TYPE_INT_RGB);
-            Graphics2D g = bufImg.createGraphics();
-            g.setColor(Color.red);
-            g.drawImage(srcImg, 0, 0, srcImgWidth, srcImgHeight, null);
             //循环遍历出所有内容
-            for (int i = 0; i < json1.get(0).size(); i++) {
+            /*for (int i = 0; i < json1.get(0).size(); i++) {
                 System.out.println(json1.get(0).get(i).get("text"));
-                /*System.out.println("置信度：" + json1.get(0).get(i).get("confidence"));
+                System.out.println("置信度：" + json1.get(0).get(i).get("confidence"));
                 List<List<Integer>> json2 = (List<List<Integer>>) json1.get(0).get(i).get("text_region");
-                System.out.println("文字的坐标" + json2);*/
+                System.out.println("文字的坐标" + json2);
+            }*/
+
+            for (int i = 2; (i*5-1) < json1.get(0).size(); i++){
+                Chem chem = new Chem();
+                chem.setCode(json1.get(0).get((i-1)*5).get("text").toString());
+                System.out.print(json1.get(0).get((i-1)*5).get("text")+" ");
+
+                chem.setItem(json1.get(0).get((i-1)*5+1).get("text").toString());
+                System.out.print(json1.get(0).get((i-1)*5+1).get("text")+" ");
+
+                chem.setResult(json1.get(0).get((i-1)*5+2).get("text").toString());
+                System.out.print(json1.get(0).get((i-1)*5+2).get("text")+" ");
+
+                chem.setRefer(json1.get(0).get((i-1)*5+3).get("text").toString());
+                System.out.print(json1.get(0).get((i-1)*5+3).get("text")+" ");
+
+                chem.setUnit(json1.get(0).get((i-1)*5+4).get("text").toString());
+                System.out.print(json1.get(0).get((i-1)*5+4).get("text")+" ");
+
+                int result = chemMapper.insert(chem);
+                //System.out.println(result);
             }
-            g.dispose();
-            // 输出图片
-            FileOutputStream outImgStream = new FileOutputStream(tarImgPath);
-            ImageIO.write(bufImg, "png", outImgStream);
-            outImgStream.flush();
-            outImgStream.close();
+
         } catch (IOException e) {
             e.printStackTrace();
             return "上传失败," + e.getMessage();
