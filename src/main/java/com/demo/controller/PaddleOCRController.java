@@ -1,5 +1,6 @@
 package com.demo.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.demo.dao.ChemMapper;
 import com.demo.entity.Chem;
 import org.mybatis.spring.annotation.MapperScan;
@@ -77,25 +78,27 @@ public class PaddleOCRController {
 
             for (int i = 2; (i*5-1) < json1.get(0).size(); i++){
                 Chem chem = new Chem();
-                chem.setCode(json1.get(0).get((i-1)*5).get("text").toString());
-                System.out.print(json1.get(0).get((i-1)*5).get("text")+" ");
+                int j = (i-1)*5;
 
-                chem.setItem(json1.get(0).get((i-1)*5+1).get("text").toString());
-                System.out.print(json1.get(0).get((i-1)*5+1).get("text")+" ");
+                chem.setCode(json1.get(0).get(j).get("text").toString());
+                System.out.print(json1.get(0).get((j)).get("text")+" ");
 
-                chem.setResult(json1.get(0).get((i-1)*5+2).get("text").toString());
-                System.out.print(json1.get(0).get((i-1)*5+2).get("text")+" ");
+                chem.setItem(json1.get(0).get(j+1).get("text").toString());
+                System.out.print(json1.get(0).get(j+1).get("text")+" ");
 
-                chem.setRefer(json1.get(0).get((i-1)*5+3).get("text").toString());
-                System.out.print(json1.get(0).get((i-1)*5+3).get("text")+" ");
+                chem.setResult(json1.get(0).get(j+2).get("text").toString());
+                System.out.print(json1.get(0).get(j+2).get("text")+" ");
 
-                chem.setUnit(json1.get(0).get((i-1)*5+4).get("text").toString());
-                System.out.print(json1.get(0).get((i-1)*5+4).get("text")+" ");
+
+                chem.setRefer(json1.get(0).get(j+3).get("text").toString());
+                System.out.print(json1.get(0).get(j+3).get("text")+" ");
+
+                chem.setUnit(json1.get(0).get(j+4).get("text").toString());
+                System.out.println(json1.get(0).get(j+4).get("text")+" ");
 
                 int result = chemMapper.insert(chem);
                 //System.out.println(result);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
             return "上传失败," + e.getMessage();
