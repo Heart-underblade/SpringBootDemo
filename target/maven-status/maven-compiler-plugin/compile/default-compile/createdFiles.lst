@@ -1,10 +1,13 @@
 com\demo\service\JdbcServices.class
 com\demo\dao\BookMapper.class
 com\demo\controller\TableController.class
+com\demo\utils\FileUtil.class
 com\demo\service\JdbcImpl.class
 com\demo\controller\BookController.class
 com\demo\service\ApiService.class
 com\demo\dao\ChemMapper.class
+com\demo\utils\Base64Util.class
+com\demo\utils\HttpUtil.class
 com\demo\Application.class
 com\demo\entity\Book.class
 com\demo\service\MybatisImpl.class

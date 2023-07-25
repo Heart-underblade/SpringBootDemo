@@ -106,7 +106,7 @@ public class PaddleOCRController {
         return "OK";
     }
 
-    private String ImageToBase64(InputStream imgPath) {
+    public static String ImageToBase64(InputStream imgPath) {
         byte[] data = null;
         // 读取图片字节数组
         //Read the image byte array

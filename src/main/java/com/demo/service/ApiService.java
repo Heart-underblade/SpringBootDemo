@@ -76,7 +76,4 @@ public class ApiService {
         return null;
     }
 
-    public static void main(String args[]){
-        getAuth();
-    }
 }
