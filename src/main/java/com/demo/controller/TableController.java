@@ -3,29 +3,25 @@ package com.demo.controller;
 import com.demo.dao.ChemMapper;
 import com.demo.entity.Chem;
 import com.demo.utils.*;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import sun.misc.BASE64Encoder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.sql.Wrapper;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
 
 import static com.demo.controller.PaddleOCRController.ImageToBase64;
 
@@ -58,45 +54,56 @@ public class TableController {
 
             String result = HttpUtil.post(url, accessToken, param);
 
-            JSONArray jsonObject = JSONArray.fromObject(result);
+            Map json = (Map) JSON.parse(result);
 
             //解析Json返回值
-            List<List<Map>> json1 = (List<List<Map>>) json.get("tables_result");
+            List<Map> json0 = (List<Map>) json.get("tables_result");
+            List<Map>json1 = (List<Map>) json0.get(0).get("body");
 
-            for (int i=1; i<json1.size(); i++){
-                String col = json1.get(1).get(i).get("col_end").toString();
-                Chem chem = new Chem();
+            int allRow = Integer.parseInt(json1.get(json1.size()-1).get("row_end").toString())-1;
+            Chem[] chemList = new Chem[allRow];
+
+            for (int i=0;i<allRow;i++){
+                chemList[i]=new Chem();
+            }
+            for (int i=5; i<json1.size(); i++){
+                String col = json1.get(i).get("col_end").toString();
+                int row = Integer.parseInt(json1.get(i).get("row_start").toString())-1;
                 switch(col){
                     case "1":
-                        chem.setCode(json1.get(1).get(i).get("words").toString());
-                        System.out.print(json1.get(1).get((i)).get("words")+" ");
+                        chemList[row].setCode(json1.get(i).get("words").toString());
+                        System.out.print(json1.get((i)).get("words")+" ");
                         break;
                     case "2":
-                        chem.setItem(json1.get(1).get(i).get("words").toString());
-                        System.out.print(json1.get(1).get(i).get("words")+" ");
+                        chemList[row].setItem(json1.get(i).get("words").toString());
+                        System.out.print(json1.get(i).get("words")+" ");
                         break;
                     case "3":
-                        chem.setResult(json1.get(1).get(i).get("words").toString());
-                        System.out.print(json1.get(1).get(i).get("words")+" ");
+                        chemList[row].setResult(json1.get(i).get("words").toString());
+                        System.out.print(json1.get(i).get("words")+" ");
                         break;
                     case "4":
-                        chem.setRefer(json1.get(1).get(i).get("words").toString());
-                        System.out.print(json1.get(1).get(i).get("words")+" ");
+                        chemList[row].setRefer(json1.get(i).get("words").toString());
+                        System.out.print(json1.get(i).get("words")+" ");
                         break;
                     case "5":
-                        chem.setUnit(json1.get(1).get(i).get("words").toString());
-                        System.out.println(json1.get(1).get(i).get("words")+" ");
+                        chemList[row].setUnit(json1.get(i).get("words").toString());
+                        System.out.println(json1.get(i).get("words")+" ");
                         break;
                     default:
                         return null;
                 }
-                int sql = chemMapper.insert(chem);
+            }
+
+
+            for (int i=0;i<allRow;i++){
+                int sql = chemMapper.insert(chemList[i]);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return "Done";
     }
 
 }
